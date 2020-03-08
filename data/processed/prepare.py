@@ -10,6 +10,7 @@ import defusedxml
 import cairosvg
 import urllib
 import cv2
+import random
 from shutil import rmtree, copyfile
 from uuid import uuid4
 from zipfile import ZipFile
@@ -126,10 +127,15 @@ with tempfile.TemporaryDirectory() as tmpdir:
         extracted_folders[basename] = extract(src_zip_fp, dst_dir) 
 
     # Step 2 find all the 
+    random.seed(521)
     test_dirs = TEST_DIRS
     final_dirs = FINAL_DIRS
     training_dirs = [
         d for d in extracted_folders.keys() if d not in TEST_DIRS and d not in FINAL_DIRS
+    ]
+    validation_dirs = random.sample(training_dirs, 2)
+    training_dirs = [
+        d for d in training_dirs if d not in validation_dirs
     ]
 
     target_training_dir = os.path.join(DST_DATA_DIR, 'training')
@@ -140,6 +146,15 @@ with tempfile.TemporaryDirectory() as tmpdir:
         pplog.info(pp.pprint(svgs))
         for svg_fp in {x for x in svgs}:
             produce_pngs(svg_fp, target_training_dir)
+
+    validation_training_dir = os.path.join(DST_DATA_DIR, 'validation')
+    if not IGNORE_EXISTS and os.path.exists(validation_training_dir):
+        rmtree(validation_training_dir)
+    for td in validation_dirs:
+        svgs = find_files(extracted_folders[td], 'svg')
+        pplog.info(pp.pprint(svgs))
+        for svg_fp in {x for x in svgs}:
+            produce_pngs(svg_fp, validation_training_dir)
 
     test_training_dir = os.path.join(DST_DATA_DIR, 'testing')
     if not IGNORE_EXISTS and os.path.exists(test_training_dir):
