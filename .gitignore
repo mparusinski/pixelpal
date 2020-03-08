@@ -1,6 +1,7 @@
 *.tar.gz
 *.zip
 **/.*.swp
+**/.ipynb_checkpoints
 venv
 data/processed/testing
 data/processed/training
