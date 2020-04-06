@@ -2,3 +2,7 @@
 *.zip
 **/.*.swp
 venv
+data/processed/testing
+data/processed/training
+data/processed/final
+data/processed/validation

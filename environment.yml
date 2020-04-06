@@ -1,0 +1,8 @@
+name: pixelpal
+channels:
+  - conda-forge
+dependencies:         # everything under this, installed by conda
+  - python==3.7
+  - pip
+  - pip:
+      - -r file:requirements.txt
