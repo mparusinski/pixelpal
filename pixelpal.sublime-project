@@ -1,0 +1,13 @@
+# pixelpal.sublime-project
+{
+    "settings": {
+        // ...
+        "python_virtualenv": "$project_path/venv/",
+        "python_interpreter": "$project_path/venv/bin/python",
+
+        "python_package_paths": [
+            "$home/.buildout/eggs",
+            "$project_path/addons"
+        ]
+    }
+}

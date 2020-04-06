@@ -9,13 +9,17 @@ import xml
 import defusedxml
 import cairosvg
 import urllib
-from shutil import rmtree
+import cv2
+import random
+from shutil import rmtree, copyfile
 from uuid import uuid4
 from zipfile import ZipFile
 
 RAW_DATA_DIR = './data/raw/'
 DST_DATA_DIR = './data/processed'
 TEST_DIRS = ['clearlooks', 'tango']
+FINAL_DIRS = ['CDE', 'OS2']
+IGNORE_EXISTS = False
 
 pplog = logging.getLogger('pixel pal')
 pplog.setLevel(logging.INFO)
@@ -53,16 +57,25 @@ def extract(fp, target_dir):
     return target_dir
 
 
-def find_svgs(directory):
+def find_files(directory, extension):
     svg_files = []
     for root, dirs, files in os.walk(directory):
         svg_files.extend([os.path.join(root, f) for f in files if
-            f.endswith('.svg')])
+            f.endswith('.' + extension)])
     return svg_files
 
 
 def is_theme_file(fp):
     return fp.endswith('.tar.gz') or fp.endswith('.zip')
+
+
+def resize_png(png_fp, dst_fp, target_size=(32,32)):
+    pplog.info("Reshaping {} to dimension and writing results to {}".format(
+        png_fp, target_size, dst_fp
+    ))
+    img = cv2.imread(png_fp, cv2.IMREAD_UNCHANGED)
+    resized = cv2.resize(img, target_size, interpolation = cv2.INTER_AREA)
+    cv2.imwrite(dst_fp, resized)
 
 
 def produce_pngs(svg_fp, dst_dir):
@@ -76,6 +89,8 @@ def produce_pngs(svg_fp, dst_dir):
         )
         # Skipping problematic files isn't bad; we only want enough files
         try:
+            if IGNORE_EXISTS and os.path.exist(dst_png_fp):
+                continue
             cairosvg.svg2png(
                 url=svg_fp,
                 write_to=dst_png_fp,
@@ -112,23 +127,52 @@ with tempfile.TemporaryDirectory() as tmpdir:
         extracted_folders[basename] = extract(src_zip_fp, dst_dir) 
 
     # Step 2 find all the 
+    random.seed(521)
     test_dirs = TEST_DIRS
-    training_dirs = [d for d in extracted_folders.keys() if d not in TEST_DIRS]
+    final_dirs = FINAL_DIRS
+    training_dirs = [
+        d for d in extracted_folders.keys() if d not in TEST_DIRS and d not in FINAL_DIRS
+    ]
+    validation_dirs = random.sample(training_dirs, 2)
+    training_dirs = [
+        d for d in training_dirs if d not in validation_dirs
+    ]
 
     target_training_dir = os.path.join(DST_DATA_DIR, 'training')
-    if os.path.exists(target_training_dir):
+    if not IGNORE_EXISTS and os.path.exists(target_training_dir):
         rmtree(target_training_dir)
     for td in training_dirs:
-        svgs = find_svgs(extracted_folders[td])
+        svgs = find_files(extracted_folders[td], 'svg')
         pplog.info(pp.pprint(svgs))
         for svg_fp in {x for x in svgs}:
             produce_pngs(svg_fp, target_training_dir)
 
+    validation_training_dir = os.path.join(DST_DATA_DIR, 'validation')
+    if not IGNORE_EXISTS and os.path.exists(validation_training_dir):
+        rmtree(validation_training_dir)
+    for td in validation_dirs:
+        svgs = find_files(extracted_folders[td], 'svg')
+        pplog.info(pp.pprint(svgs))
+        for svg_fp in {x for x in svgs}:
+            produce_pngs(svg_fp, validation_training_dir)
+
     test_training_dir = os.path.join(DST_DATA_DIR, 'testing')
-    if os.path.exists(test_training_dir):
+    if not IGNORE_EXISTS and os.path.exists(test_training_dir):
         rmtree(test_training_dir)
     for td in test_dirs:
-        svgs = find_svgs(extracted_folders[td])
+        svgs = find_files(extracted_folders[td], 'svg')
         pplog.info(pp.pprint(svgs))
         for svg_fp in svgs:
             produce_pngs(svg_fp, test_training_dir)
+
+    final_training_dir = os.path.join(DST_DATA_DIR, 'final')
+    if not IGNORE_EXISTS and os.path.exists(final_training_dir):
+        rmtree(final_training_dir)
+    os.makedirs(final_training_dir, exist_ok=True)
+    for td in final_dirs:
+        pngs = find_files(extracted_folders[td], 'png')
+        pplog.info(pp.pprint(pngs))
+        for png_fp in pngs:
+            file_basename = os.path.basename(png_fp)
+            dst_fp = os.path.join(final_training_dir, file_basename)
+            resize_png(png_fp, dst_fp, target_size=(32,32))
