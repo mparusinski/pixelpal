@@ -7,3 +7,5 @@ data/processed/testing
 data/processed/training
 data/processed/final
 data/processed/validation
+
+**/__pycache__
