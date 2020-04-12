@@ -60,8 +60,8 @@ def display_file(small_image, large_image, augmentator):
 
     print()
     print("Overall")
-    print("\tAverage Peak Signal to Noise Ratio: {}".format(np.average(accum_ssim_metric)))
-    print("\tAverage Structural Similarity     : {}".format(np.average(accum_psnr_metric)))
+    print("\tAverage Peak Signal to Noise Ratio: {}".format(np.average(accum_psnr_metric)))
+    print("\tAverage Structural Similarity     : {}".format(np.average(accum_ssim_metric)))
     print("\tStd-dev Peak Signal to Noise Ratio: {}".format(np.std(accum_psnr_metric)))
     print("\tStd-dev Structural Similarity     : {}".format(np.std(accum_ssim_metric)))
 
