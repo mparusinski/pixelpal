@@ -1,3 +1,4 @@
+import os
 import numpy as np
 
 
@@ -9,3 +10,11 @@ def fix_missing_alpha_channel(image):
         return new_image
     else:
         return image
+
+
+def build_list_of_images_in_dir(folder):
+    for file_in_folder in sorted(os.listdir(folder)):
+        full_path = os.path.join(folder, file_in_folder)
+        extension = file_in_folder.split('.')[-1]
+        if os.path.isfile(full_path) and extension in ('png', 'jpg'):
+            yield full_path

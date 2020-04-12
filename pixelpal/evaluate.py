@@ -7,15 +7,7 @@ import numpy as np
 import tensorflow as tf
 
 from pixelpal.model.base import get_model
-from pixelpal.utils import fix_missing_alpha_channel
-
-
-def __build_list_of_images__(folder):
-    for file_in_folder in sorted(os.listdir(folder)):
-        full_path = os.path.join(folder, file_in_folder)
-        extension = file_in_folder.split('.')[-1]
-        if os.path.isfile(full_path) and extension in ('png', 'jpg'):
-            yield full_path
+from pixelpal.utils import fix_missing_alpha_channel, build_list_of_images_in_dir
 
 
 @click.command()
@@ -24,8 +16,8 @@ def __build_list_of_images__(folder):
 @click.argument('augmentator')
 def display_file(small_image, large_image, augmentator):
     if os.path.isdir(small_image) and os.path.isdir(large_image):
-        small_images = __build_list_of_images__(small_image)
-        large_images = __build_list_of_images__(large_image)
+        small_images = build_list_of_images_in_dir(small_image)
+        large_images = build_list_of_images_in_dir(large_image)
     elif os.path.isfile(small_image) and os.path.isfile(large_image):
         small_images = [small_image]
         large_images = [large_image]
