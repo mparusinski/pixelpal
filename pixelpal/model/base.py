@@ -3,17 +3,35 @@ import os
 import importlib
 import numpy as np
 
+import tensorflow as tf
+from tensorflow.keras.optimizers import Adam
+
 from pixelpal.utils import fix_missing_alpha_channel
+
+
+def psnr_metric(y_true, y_pred):
+    return tf.image.psnr(y_true, y_pred, max_val=1.0)
+
+
+def ssim_metric(y_true, y_pred):
+    return tf.image.ssim(y_true, y_pred, max_val=1.0)
 
 
 class AbstractAugmentor(object):
 
     def __init__(self, **kwargs):
         self.build_model(**kwargs)
+        self.model.compile(
+            optimizer=Adam(lr=1e-4), loss='binary_crossentropy',
+            metrics=[psnr_metric, ssim_metric]
+        )
 
     @abstractmethod
     def build_model(self, input_shape=(32, 32), channels=4, **kwargs):
         self.model = None
+
+    def learn(self, x_data, y_data, batch_size=32):
+        self.model.fit(x_data, y_data, batch_size=batch_size)
 
     def augment(self, images):
         if type(images) == list and len(images) >= 1:
