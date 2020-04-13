@@ -4,12 +4,19 @@ import matplotlib.image as mpimg
 from pixelpal.model.base import get_model
 
 
-def display_file(image, augmentator=None):
+def display_file(image, augmentator=None, weights_file=None, save_fig=None):
     image = mpimg.imread(image)
+    if augmentator is None and weights_file:
+        raise Exception("Option 'weights_file' only supported with a 'module_name' option")
     if augmentator:
         augmentation_model = get_model(augmentator)
+        if weights_file:
+            augmentation_model.load_weights(weights_file)
         image = augmentation_model.augment(image)[0]
     plt.imshow(image)
-    plt.show()
+    if save_fig:
+        plt.savefig(save_fig)
+    else:
+        plt.show()
 
 

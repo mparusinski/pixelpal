@@ -33,6 +33,20 @@ class AbstractAugmentor(object):
     def learn(self, x_data, y_data, batch_size=32):
         self.model.fit(x_data, y_data, batch_size=batch_size)
 
+    def save_weights(self, weights_file):
+        extension = weights_file.split('.')[-1]
+        if extension == 'h5':
+            self.model.save_weights(weights_file)
+        else:
+            raise Exception("Unsupported weights format {}".format(extension))
+
+    def load_weights(self, weights_file):
+        extension = weights_file.split('.')[-1]
+        if extension == 'h5':
+            self.model.load_weights(weights_file)
+        else:
+            raise Exception("Unsupported weights format {}".format(extension))
+
     def augment(self, images):
         if type(images) == list and len(images) >= 1:
             # Fix alpha channel
