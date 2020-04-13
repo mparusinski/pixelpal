@@ -3,6 +3,7 @@
 **/.*.swp
 **/.ipynb_checkpoints
 venv
+venv-gpu
 data/processed/testing
 data/processed/training
 data/processed/final

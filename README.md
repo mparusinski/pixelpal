@@ -3,7 +3,8 @@
 ## Setup
 
 ```bash
-conda env create -f environment.yml --name pixelpal
-conda-develop . -n pixelpal
-conda activate pixelpal
+virtualenv -p /usr/bin/python3 venv
+source venv/bin/activate
+pip install -r requirements.txt
+pip install tensorflow #(or tensorflow-gpu / tensorflow-rocm)
 ```

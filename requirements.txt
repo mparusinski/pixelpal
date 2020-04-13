@@ -1,5 +1,5 @@
 cairosvg
-tensorflow
 matplotlib
 numpy
 tqdm
+matplotlib
