@@ -33,14 +33,14 @@ class AbstractAugmentor(object):
     def build_model(self, input_shape=(32, 32), channels=4, **kwargs):
         self.model = None
 
-    def learn(self, x_data, y_data, batch_size=32, epochs=10, monitor='val_ssim_metric', **kwargs):
+    def learn(self, x_data, y_data, batch_size=32, epochs=10, **kwargs):
         # Model checkpoints
         checkpoint_filepath = "./run/weights-improvement-{epoch:02d}-{val_psnr_metric:.2f}-{val_ssim_metric:.2f}.hdf5"
         os.makedirs(os.path.dirname(checkpoint_filepath), exist_ok=True)
-        model_checkpoint = ModelCheckpoint(checkpoint_filepath, monitor=monitor, verbose=1, save_best_only=True, mode='max')
+        model_checkpoint = ModelCheckpoint(checkpoint_filepath, monitor='val_mse', verbose=1, save_best_only=True, mode='max')
         
         # Early stopping
-        early_stoping = EarlyStopping(monitor=monitor, min_delta=1e-3, patience=2, verbose=1)
+        early_stoping = EarlyStopping(monitor='val_mse', min_delta=1e-3, patience=2, verbose=1)
         
         # CSV logger
         csv_filepath = "./run/log.csv"

@@ -20,8 +20,8 @@ class PreUpsampling(AbstractAugmentor):
 
         previous_layer = upscale
         for i in range(num_convolution_layers):
-            previous_layer = Conv2D(filters, kernel_size, padding="same")(previous_layer)
+            previous_layer = Conv2D(filters, kernel_size, padding="same", activation="relu")(previous_layer)
 
-        reconstruction = Conv2D(channels, 1, padding="same")(previous_layer)
+        reconstruction = Conv2D(channels, 1, padding="same", activation="sigmoid")(previous_layer)
         self.model = Model(inputs=input_layer, outputs=reconstruction)
 

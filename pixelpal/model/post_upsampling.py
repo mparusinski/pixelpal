@@ -18,9 +18,9 @@ class PostUpsampling(AbstractAugmentor):
 
         previous_layer = input_layer
         for i in range(num_convolution_layers):
-            previous_layer = Conv2D(filters, kernel_size, padding="same")(previous_layer)
+            previous_layer = Conv2D(filters, kernel_size, padding="same", activation="relu")(previous_layer)
 
         upscale = UpSampling2D(size=(2, 2), interpolation='bilinear')(previous_layer)
-        reconstruction = Conv2D(channels, 1, padding="same")(upscale)
+        reconstruction = Conv2D(channels, 1, padding="same", activation="sigmoid")(upscale)
 
         self.model = Model(inputs=input_layer, outputs=reconstruction)
