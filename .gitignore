@@ -4,6 +4,7 @@
 **/.ipynb_checkpoints
 venv
 venv-gpu
+models/
 data/processed/testing
 data/processed/training
 data/processed/final
