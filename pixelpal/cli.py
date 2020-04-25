@@ -10,6 +10,7 @@ def train_parser(parser):
     parser.add_argument('--validation-dataset', type=str, help="Dataset to use as validation")
     parser.add_argument('--epochs', type=int, help="Number of epochs")
     parser.add_argument('--callbacks', type=str, nargs='+', help="List of callbacks")
+    parser.add_argument('--data-augmentation', type=str, help='Data augmentation generator')
 
 
 def display_parser(parser):
@@ -30,7 +31,11 @@ if __name__ == '__main__':
     
     args = parser.parse_args()
     if args.tool == 'train':
-        train(args.module, args.dataset, args.weights, validation_dataset= args.validation_dataset, epochs=args.epochs, callbacks=args.callbacks)
+        train(
+            args.module, args.dataset, args.weights, 
+            validation_dataset= args.validation_dataset, epochs=args.epochs, 
+            callbacks=args.callbacks, data_augmentation=args.data_augmentation
+        )
         
     if args.tool == 'display':
         display_file(args.image, args.module, args.weights)
