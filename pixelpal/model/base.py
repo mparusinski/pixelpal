@@ -9,6 +9,7 @@ from tensorflow.keras.optimizers import Adam
 from tensorflow.keras.callbacks import ModelCheckpoint, EarlyStopping, CSVLogger
 
 from pixelpal.utils import fix_missing_alpha_channel
+from cffi.pkgconfig import call
 
 
 def psnr_metric(y_true, y_pred):
@@ -33,22 +34,8 @@ class AbstractAugmentor(object):
     def build_model(self, input_shape=(32, 32), channels=4, **kwargs):
         self.model = None
 
-    def learn(self, x_data, y_data, batch_size=32, epochs=10, **kwargs):
-        # Model checkpoints
-        checkpoint_filepath = "./run/weights-improvement-{epoch:02d}-{val_psnr_metric:.2f}-{val_ssim_metric:.2f}.hdf5"
-        os.makedirs(os.path.dirname(checkpoint_filepath), exist_ok=True)
-        model_checkpoint = ModelCheckpoint(checkpoint_filepath, monitor='val_mse', verbose=1, save_best_only=True, mode='max')
-        
-        # Early stopping
-        early_stoping = EarlyStopping(monitor='val_mse', min_delta=1e-3, patience=2, verbose=1)
-        
-        # CSV logger
-        csv_filepath = "./run/log.csv"
-        os.makedirs(os.path.dirname(csv_filepath), exist_ok=True)
-        csv_logger = CSVLogger(csv_filepath)
-        
-        callbacks_list = [model_checkpoint, early_stoping, csv_logger]
-        self.model.fit(x_data, y_data, batch_size=batch_size, epochs=epochs, callbacks=callbacks_list, **kwargs)
+    def learn(self, x_data, y_data, batch_size=32, epochs=10, callbacks=[], **kwargs):
+        self.model.fit(x_data, y_data, batch_size=batch_size, epochs=epochs, callbacks=callbacks, **kwargs)
 
     def save_weights(self, weights_file):
         extension = weights_file.split('.')[-1]
@@ -104,4 +91,18 @@ def get_model(module_name, **kwargs):
     model_class_name = __get_model_name__(modules_tokens[-1])
     model_class = getattr(module, model_class_name)
     return model_class(**kwargs)
+
+
+def get_callbacks(callbacks, **kwargs):
+    if callbacks is None:
+        return []
+    keras_callbacks = []
+    for cb in callbacks:
+        try:
+            module = importlib.import_module(cb)
+        except ModuleNotFoundError:
+            raise Exception("Can't import {}\n\t(current working directory is {})".format(cb, os.getcwd()))
+        callback_producer = getattr(module, 'produce_callback')
+        keras_callbacks.append(callback_producer())
+    return keras_callbacks
 

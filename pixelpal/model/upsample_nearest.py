@@ -4,7 +4,7 @@ from tensorflow.keras.layers import Input, UpSampling2D
 from pixelpal.model.base import AbstractAugmentor
 
 
-class Simple(AbstractAugmentor):
+class UpsampleNearest(AbstractAugmentor):
 
     def __init__(self):
         super().__init__()
