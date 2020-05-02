@@ -7,7 +7,7 @@ import datetime
 import tensorflow as tf
 from tensorflow.keras.optimizers import Adam
 
-from pixelpal.utils import fix_missing_alpha_channel
+from utils import fix_missing_alpha_channel
 from cffi.pkgconfig import call
 
 

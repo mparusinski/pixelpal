@@ -3,7 +3,7 @@ from tqdm import tqdm
 import numpy as np
 import matplotlib.image as mpimg
 
-from pixelpal.utils import build_list_of_images_in_dir, fix_missing_alpha_channel
+from utils import build_list_of_images_in_dir, fix_missing_alpha_channel
 
 
 def load_data(folder, classes=['32x32', '64x64'], shapes=[(32, 32), (64, 64)]):

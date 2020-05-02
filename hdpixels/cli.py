@@ -1,6 +1,6 @@
 import argparse
-from pixelpal.ai import train
-from pixelpal.visualisation.display import display_file
+from hdpixels.ai import train
+from hdpixels.visualisation.display import display_file
 
 
 def str2bool(v):

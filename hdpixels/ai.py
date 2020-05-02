@@ -1,7 +1,7 @@
 import os
 
-from pixelpal.model.base import get_model, get_callbacks, get_data_augmentation
-from pixelpal.data import load_data
+from model.base import get_model, get_callbacks, get_data_augmentation
+from data import load_data
 
 
 def train(module, dataset, weights, **kwargs):

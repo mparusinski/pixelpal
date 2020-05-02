@@ -5,8 +5,8 @@ import matplotlib.image as mpimg
 import numpy as np
 import tensorflow as tf
 
-from pixelpal.model.base import get_model
-from pixelpal.utils import fix_missing_alpha_channel, build_list_of_images_in_dir
+from hdpixels.model.base import get_model
+from hdpixels.utils import fix_missing_alpha_channel, build_list_of_images_in_dir
 
 
 def evaluate_augmentator(lowres_images, highres_images, augmentator):

@@ -1,0 +1,53 @@
+import sys
+import argparse
+from ai import train
+from visualisation.display import display_file
+
+
+def str2bool(v):
+    if isinstance(v, bool):
+        return v
+    if v.lower() in ('yes', 'true', 't', 'y', '1'):
+        return True
+    elif v.lower() in ('no', 'false', 'f', 'n', '0'):
+        return False
+    else:
+        raise argparse.ArgumentTypeError('Boolean value expected.')
+
+
+def train_parser(parser):
+    parser.add_argument('module', type=str, help="Module to train")
+    parser.add_argument('dataset', type=str, help="Dataset to train on")
+    parser.add_argument('weights', type=str, help="Where to store the weights")
+    parser.add_argument('--validation-dataset', type=str, help="Dataset to use as validation")
+    parser.add_argument('--epochs', type=int, help="Number of epochs")
+    parser.add_argument('--callbacks', type=str, nargs='+', help="List of callbacks")
+    parser.add_argument('--data-augmentation', type=str, help='Data augmentation generator')
+
+
+def display_parser(parser):
+    parser.add_argument('image', type=str, help="Image to display")
+    parser.add_argument('--module', type=str, help="Module to use")
+    parser.add_argument('--weights', type=str, help="Weights to load")
+    parser.add_argument('--horizontal-flip', type=str2bool, help="Flip image horizontally", nargs='?', const=True, default=False)
+    parser.add_argument('--vertical-flip', type=str2bool, help="Flip image vertically", nargs='?', const=True, default=False)
+
+
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser(description="pixelpal")
+    subparsers = parser.add_subparsers(dest='tool')
+    parser_train = subparsers.add_parser('train', help='Train a model')
+    train_parser(parser_train)
+    parser_display = subparsers.add_parser('augment', help='Display a file')
+    display_parser(parser_display)
+    args = parser.parse_args()
+    if args.tool == 'train':
+        train(
+            args.module, args.dataset, args.weights, 
+            validation_dataset= args.validation_dataset, epochs=args.epochs, 
+            callbacks=args.callbacks, data_augmentation=args.data_augmentation
+        )
+    elif args.tool == 'augment':
+        display_file(args.image, args.module, args.weights, horizontal_flip=args.horizontal_flip, vertical_flip=args.vertical_flip)
+    else:
+        raise Exception("Requires argument, either 'train' or 'augment'")
