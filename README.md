@@ -39,7 +39,7 @@ python hdpixels train 'python.module.path' ./path/to/dataset ./path/to/weights.h
 
 so for instance"
 ```bash
-
+python hdpixels train 'model.pre_upsampling' data/processed/training/ ./models/preupsampling/v0.h5 --validation-dataset data/processed/validation --callbacks 'callbacks.csv_logger' 'callbacks.early_stopping' 'callbacks.model_checkpoint'
 ```
 
 ### Augmenting
