@@ -3,6 +3,17 @@ from pixelpal.ai import train
 from pixelpal.visualisation.display import display_file
 
 
+def str2bool(v):
+    if isinstance(v, bool):
+        return v
+    if v.lower() in ('yes', 'true', 't', 'y', '1'):
+        return True
+    elif v.lower() in ('no', 'false', 'f', 'n', '0'):
+        return False
+    else:
+        raise argparse.ArgumentTypeError('Boolean value expected.')
+
+
 def train_parser(parser):
     parser.add_argument('module', type=str, help="Module to train")
     parser.add_argument('dataset', type=str, help="Dataset to train on")
@@ -17,6 +28,8 @@ def display_parser(parser):
     parser.add_argument('image', type=str, help="Image to display")
     parser.add_argument('--module', type=str, help="Module to use")
     parser.add_argument('--weights', type=str, help="Weights to load")
+    parser.add_argument('--horizontal-flip', type=str2bool, help="Flip image horizontally", nargs='?', const=True, default=False)
+    parser.add_argument('--vertical-flip', type=str2bool, help="Flip image vertically", nargs='?', const=True, default=False)
 
 
 if __name__ == '__main__':
@@ -38,4 +51,4 @@ if __name__ == '__main__':
         )
         
     if args.tool == 'display':
-        display_file(args.image, args.module, args.weights)
+        display_file(args.image, args.module, args.weights, horizontal_flip=args.horizontal_flip, vertical_flip=args.vertical_flip)
