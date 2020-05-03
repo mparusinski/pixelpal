@@ -78,8 +78,8 @@ To donwload a copy of the default dataset do to the following:
 ```bash
 cd data/raw
 ./download.sh
-cd ../processed
-python prepare.py
+cd ../../
+python data/processed/prepare.py
 ```
 
 ---
