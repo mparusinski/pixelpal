@@ -54,6 +54,34 @@ so for instance:
 python hdpixels augment data/processed/training/32x32/0f31d855-ff12-4a8f-87a1-f06438f85123.png --module 'model.pre_upsampling' ./models/preupsampling/weights.h5
 ```
 
+## Datasets
+
+Datasets are expected to be in the following folder structure :
+
+```bash
+dataset
+├── 32x32
+│   ├── 0018ad30-f5de-4334-8239-6e7da4cfdf20.png
+│   ├── 0042c422-a0cf-451d-bb28-45789f1cd366.png
+│   ├── ...
+│   └── ffc96005-f114-4810-90cc-6f5bbd85bb9a.png
+└── 64x64
+    ├── 0018ad30-f5de-4334-8239-6e7da4cfdf20.png
+    ├── 0042c422-a0cf-451d-bb28-45789f1cd366.png
+    ├── ...
+    └── ffc96005-f114-4810-90cc-6f5bbd85bb9a.png
+
+```
+
+To donwload a copy of the default dataset do to the following:
+
+```bash
+cd data/raw
+./download.sh
+cd ../processed
+python prepare.py
+```
+
 ---
 
 ## License
