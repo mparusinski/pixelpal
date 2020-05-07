@@ -9,7 +9,7 @@ from hdpixels.model.base import get_model
 from hdpixels.utils import fix_missing_alpha_channel, build_list_of_images_in_dir
 
 
-def evaluate_augmentator(lowres_images, highres_images, augmentator):
+def evaluate_augmentator(lowres_images, highres_images, augmentator, weights):
     if os.path.isdir(lowres_images) and os.path.isdir(highres_images):
         lowres_images = build_list_of_images_in_dir(lowres_images)
         highres_images = build_list_of_images_in_dir(highres_images)
@@ -22,10 +22,13 @@ def evaluate_augmentator(lowres_images, highres_images, augmentator):
     accum_psnr_metric = []
     accum_ssim_metric = []
 
+    augmentation_model = get_model(augmentator)
+    if weights:
+        augmentation_model.load_weights(weights)
+
     for small_image_fp, large_image_fp in zip(lowres_images, highres_images):
         lowres_images = fix_missing_alpha_channel(mpimg.imread(small_image_fp))
         highres_images = fix_missing_alpha_channel(mpimg.imread(large_image_fp))
-        augmentation_model = get_model(augmentator)
         augmented_image = augmentation_model.augment(lowres_images)[0]
 
         # Computing metrics

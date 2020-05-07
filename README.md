@@ -34,25 +34,38 @@ You can run `hdpixels` in two ways : either to train a network or to augment ima
 
 To train a network run
 ```bash
-python hdpixels train 'python.module.path' ./path/to/dataset ./path/to/weights.h5 --validation-dataset ./path/to/validation-dataset --callbacks list_of_python_modules
+python -m hdpixels train 'python.module.path' ./path/to/dataset ./path/to/weights.h5 --validation-dataset ./path/to/validation-dataset --callbacks list_of_python_modules
 ```
 
 so for instance"
 ```bash
-python hdpixels train 'model.pre_upsampling' data/processed/training/ ./models/preupsampling/v0.h5 --validation-dataset data/processed/validation --callbacks 'callbacks.csv_logger' 'callbacks.early_stopping' 'callbacks.model_checkpoint'
+python -m hdpixels train 'hdpixels.model.pre_upsampling' data/processed/training/ ./models/preupsampling/v0.h5 --validation-dataset data/processed/validation --callbacks 'callbacks.csv_logger' 'callbacks.early_stopping' 'callbacks.model_checkpoint'
 ```
 
 ### Augmenting
 
 To visualise the run of a network (or not)
 ```bash
-python hdpixels augment /path/to/image.png --module 'python.module.path' --weights ./path/to/weights.h5
+python -m hdpixels augment /path/to/image.png --module 'python.module.path' --weights ./path/to/weights.h5
 ```
 
 so for instance:
 ```bash
-python hdpixels augment data/processed/training/32x32/0f31d855-ff12-4a8f-87a1-f06438f85123.png --module 'model.pre_upsampling' ./models/preupsampling/weights.h5
+python -m hdpixels augment data/processed/training/32x32/0f31d855-ff12-4a8f-87a1-f06438f85123.png --module 'hdpixels.model.pre_upsampling' ./models/preupsampling/weights.h5
 ```
+
+### Evaluate quality of model
+
+To evaluate the quality of a model (or not)
+```bash
+python -m hdpixels evaluate /path/to/dataset 'python.module.path' --weights ./path/to/weights.h5'
+```
+
+so for instance:
+```bash
+python -m hdpixels evaluate ./data/processed/training 'hdpixels.model.pre_upsampling' --weights ./models/preupsampling/weights.h5
+```
+
 
 ## Datasets
 

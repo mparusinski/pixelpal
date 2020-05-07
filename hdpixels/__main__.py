@@ -1,7 +1,8 @@
 import sys
 import argparse
-from ai import train
-from visualisation.display import display_file
+from hdpixels.ai import train
+from hdpixels.visualisation.display import display_file
+from hdpixels.evaluate import evaluate_augmentator
 
 
 def str2bool(v):
@@ -33,6 +34,12 @@ def display_parser(parser):
     parser.add_argument('--vertical-flip', type=str2bool, help="Flip image vertically", nargs='?', const=True, default=False)
 
 
+def evaluate_parser(parser):
+    parser.add_argument('dataset', type=str, help="Image dataset")
+    parser.add_argument('module', type=str, help="Module to load")
+    parser.add_argument('--weights', type=str, help="Weights to load")
+
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="pixelpal")
     subparsers = parser.add_subparsers(dest='tool')
@@ -40,6 +47,8 @@ if __name__ == '__main__':
     train_parser(parser_train)
     parser_display = subparsers.add_parser('augment', help='Display a file')
     display_parser(parser_display)
+    parser_evaluate = subparsers.add_parser('evaluate', help='Evaluate quality of module')
+    evaluate_parser(parser_evaluate)
     args = parser.parse_args()
     if args.tool == 'train':
         train(
@@ -49,5 +58,7 @@ if __name__ == '__main__':
         )
     elif args.tool == 'augment':
         display_file(args.image, args.module, args.weights, horizontal_flip=args.horizontal_flip, vertical_flip=args.vertical_flip)
+    elif args.tool == 'evaluate':
+        evaluate_augmentator(args.dataset + '/32x32', args.dataset + '/64x64', args.module, weights=args.weights)
     else:
-        raise Exception("Requires argument, either 'train' or 'augment'")
+        raise Exception("Requires argument, either 'train' or 'augment' or 'evaluate'")

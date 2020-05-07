@@ -1,7 +1,7 @@
 from tensorflow.keras import Model
 from tensorflow.keras.layers import Input, UpSampling2D, Conv2D
 
-from model.base import AbstractAugmentor
+from hdpixels.model.base import AbstractAugmentor
 
 
 class PostUpsampling(AbstractAugmentor):
