@@ -72,7 +72,7 @@ class AbstractAugmentor(object):
                         images[i, :, :, :].reshape(images.shape[1:])
                     )
             else:
-                image_as_batch = images
+                images_as_batch = images
         elif type(images) == np.ndarray and len(images.shape) == 3:
             images = fix_missing_alpha_channel(images)
             images_as_batch = images.reshape((1, *images.shape))
