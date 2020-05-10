@@ -2,7 +2,7 @@ import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
 import numpy as np
 
-from hdpixels.model.base import get_model
+from hdpixels.model.base import get_model, load_weights, augment
 
 
 def display_file(image, augmentator=None, weights_file=None, save_fig=None, horizontal_flip=False, vertical_flip=False):
@@ -17,8 +17,8 @@ def display_file(image, augmentator=None, weights_file=None, save_fig=None, hori
     if augmentator:
         augmentation_model = get_model(augmentator)
         if weights_file:
-            augmentation_model.load_weights(weights_file)
-        image = augmentation_model.augment(image)[0]
+            load_weights(augmentation_model, weights_file)
+        image = augment(augmentation_model, image)[0]
     plt.imshow(image)
     if save_fig:
         plt.savefig(save_fig)

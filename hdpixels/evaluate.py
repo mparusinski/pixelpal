@@ -6,7 +6,7 @@ from itertools import islice
 import numpy as np
 import tensorflow as tf
 
-from hdpixels.model.base import get_model
+from hdpixels.model.base import get_model, load_weights, augment
 from hdpixels.utils import fix_missing_alpha_channel, build_list_of_images_in_dir
 
 
@@ -28,7 +28,7 @@ def handle_batch(augmentation_model, batch, verbose):
     lowres_images_batch = np.array(lowres_images_batch)
     highres_images_batch = np.array(highres_images_batch)
 
-    augmented_images = augmentation_model.augment(lowres_images_batch)
+    augmented_images = augment(augmentation_model, lowres_images_batch)
 
     for augmented_image, highres_image, batch_elem in zip(augmented_images, highres_images_batch, batch):
         small_image_fp, large_image_fp = batch_elem
@@ -66,7 +66,7 @@ def evaluate_augmentator(lowres_images, highres_images, augmentator, weights, ve
 
     augmentation_model = get_model(augmentator)
     if weights:
-        augmentation_model.load_weights(weights)
+        load_weights(augmentation_model, weights)
 
     for batch in batch_iterate(zip(lowres_images, highres_images)):
         for psnr_metric, ssim_metric in handle_batch(augmentation_model, batch, verbose):
