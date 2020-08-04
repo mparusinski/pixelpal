@@ -1,14 +1,11 @@
-from abc import abstractmethod
 import os
 import importlib
 import numpy as np
-import datetime
 
 import tensorflow as tf
-from tensorflow.keras.optimizers import Adam
+from tensorflow.keras.models import load_model
 
 from hdpixels.utils import fix_missing_alpha_channel
-from cffi.pkgconfig import call
 
 
 def psnr_metric(y_true, y_pred):
@@ -20,32 +17,30 @@ def ssim_metric(y_true, y_pred):
 
 
 def learn(model, x_data, y_data, batch_size=32, epochs=10, callbacks=[], data_augmentation=None, **kwargs):        
-    if data_augmentation:
-        generator = data_augmentation(x_data, y_data, batch_size=batch_size)
-        model.fit(
-            generator, epochs=epochs, callbacks=callbacks, **kwargs
-        )
-    else:
-        model.fit(
-            x_data, y_data, batch_size=batch_size, epochs=epochs, callbacks=callbacks, **kwargs
-        )
+    x_data, y_data = data_augmentation(x_data, y_data)
+    model.fit(
+        x_data, y_data, epochs=epochs, callbacks=callbacks, batch_size=batch_size, **kwargs
+    )
 
-def save_weights(model, weights_file):
+
+def save_weights(sk_model, weights_file):
     extension = weights_file.split('.')[-1]
     if extension == 'h5':
-        model.save_weights(weights_file)
+        sk_model.model.save(weights_file)
     else:
         raise Exception("Unsupported weights format {}".format(extension))
 
-def load_weights(model, weights_file):
+
+def load_weights(sk_model, weights_file):
     extension = weights_file.split('.')[-1]
     if extension == 'h5':
-        model.load_weights(weights_file)
+        sk_model.load_weights(weights_file)
     else:
         raise Exception("Unsupported weights format {}".format(extension))
+
 
 def augment(model, images):
-    if type(images) == list and len(images) >= 1:
+    if type(images) == list and len(images) == 1:
         # Fix alpha channel
         images = [fix_missing_alpha_channel(image) for image in images]
         image_as_batch = np.array(images)
@@ -77,7 +72,7 @@ def get_model(module_name, **kwargs):
         raise Exception("Can't import {}\n\t(current working directory is {})".format(module_name, os.getcwd()))
     modules_tokens = module_name.split('.')
     model_creator = getattr(module, 'create_model')
-    return model_creator(**kwargs)
+    return model_creator()
 
 
 def get_data_augmentation(augmentation, **kwargs):
@@ -87,8 +82,8 @@ def get_data_augmentation(augmentation, **kwargs):
         module = importlib.import_module(augmentation)
     except:
         raise Exception("Can't import {}\n\t(current working directory is {})".format(augmentation, os.getcwd()))
-    data_augmentation_producer = getattr(module, 'produce_generator')
-    return data_augmentation_producer()
+    data_augmentation_producer = getattr(module, 'create_generator')
+    return data_augmentation_producer 
 
 
 def get_callbacks(callbacks, **kwargs):
