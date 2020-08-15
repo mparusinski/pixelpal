@@ -5,7 +5,7 @@ from tensorflow.keras.optimizers import Adam
 from hdpixels.model.base import ssim_metric, psnr_metric
 
 
-def create_model(input_shape=(32, 32), channels=4, filters=64, kernel_size=3, num_conv_layers=2):
+def create_model(input_shape=(32, 32), channels=4, filters=64, kernel_size=3, num_conv_layers=4):
     input_layer = Input(shape=(*input_shape, channels))
 
     previous_layer = input_layer
@@ -19,5 +19,6 @@ def create_model(input_shape=(32, 32), channels=4, filters=64, kernel_size=3, nu
 
     model = Model(inputs=input_layer, outputs=reconstruction)
     model.compile(optimizer=Adam(lr=1e-4), loss='mse', metrics=[ssim_metric, psnr_metric])
+    print(model.summary())
 
     return model

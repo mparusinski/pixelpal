@@ -39,7 +39,7 @@ python -m hdpixels train 'python.module.path' ./path/to/dataset ./path/to/weight
 
 so for instance"
 ```bash
-python -m hdpixels train 'hdpixels.model.pre_upsampling' data/processed/training/ ./models/preupsampling/v0.h5 --validation-dataset data/processed/validation --callbacks 'callbacks.csv_logger' 'callbacks.early_stopping' 'callbacks.model_checkpoint'
+python -m hdpixels train 'hdpixels.model.pre_upsampling' data/processed/training/ ./models/preupsampling/v0.h5 --validation-dataset data/processed/validation --callbacks 'hdpixels.callbacks.csv_logger' 'hdpixels.callbacks.early_stopping' 'hdpixels.callbacks.model_checkpoint'
 ```
 
 ### Augmenting
@@ -51,7 +51,7 @@ python -m hdpixels augment /path/to/image.png --module 'python.module.path' --we
 
 so for instance:
 ```bash
-python -m hdpixels augment data/processed/training/32x32/0f31d855-ff12-4a8f-87a1-f06438f85123.png --module 'hdpixels.model.pre_upsampling' ./models/preupsampling/weights.h5
+python -m hdpixels augment data/processed/training/32x32/0f31d855-ff12-4a8f-87a1-f06438f85123.png --module 'hdpixels.model.pre_upsampling' --weights ./models/preupsampling/weights.h5
 ```
 
 ### Evaluate quality of model

@@ -16,8 +16,9 @@ def ssim_metric(y_true, y_pred):
     return tf.image.ssim(y_true, y_pred, max_val=1.0)
 
 
-def learn(model, x_data, y_data, batch_size=32, epochs=10, callbacks=[], data_augmentation=None, **kwargs):        
-    x_data, y_data = data_augmentation(x_data, y_data)
+def learn(model, x_data, y_data, batch_size=32, epochs=10, callbacks=[], data_augmentation=None, **kwargs):
+    if data_augmentation:      
+        x_data, y_data = data_augmentation(x_data, y_data)
     model.fit(
         x_data, y_data, epochs=epochs, callbacks=callbacks, batch_size=batch_size, **kwargs
     )
@@ -26,7 +27,7 @@ def learn(model, x_data, y_data, batch_size=32, epochs=10, callbacks=[], data_au
 def save_weights(sk_model, weights_file):
     extension = weights_file.split('.')[-1]
     if extension == 'h5':
-        sk_model.model.save(weights_file)
+        sk_model.save(weights_file)
     else:
         raise Exception("Unsupported weights format {}".format(extension))
 
