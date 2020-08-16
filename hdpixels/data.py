@@ -2,11 +2,12 @@ import os
 from tqdm import tqdm
 import numpy as np
 import matplotlib.image as mpimg
+from tensorflow.keras.utils import Sequence
 
 from hdpixels.utils import build_list_of_images_in_dir, fix_missing_alpha_channel
 
 
-def load_data(folder, classes=['32x32', '64x64'], shapes=[(32, 32), (64, 64)]):
+def load_data(folder, classes=['32x32', '64x64'], shapes=[(32, 32), (64, 64)], shuffle=False):
     files_per_classes = {
         x: list(build_list_of_images_in_dir(os.path.join(folder, x)))
         for x in classes
@@ -25,4 +26,8 @@ def load_data(folder, classes=['32x32', '64x64'], shapes=[(32, 32), (64, 64)]):
         X[i, :, :, :] = lowres_image
         Y[i, :, :, :] = hires_image
 
-    return X, Y
+    if shuffle:
+        random_indices = np.random.permutation(X.shape[-1])
+        return X[:, :, :, random_indices], Y[:, :, :, random_indices]
+    else:
+        return X, Y

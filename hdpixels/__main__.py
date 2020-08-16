@@ -23,7 +23,7 @@ def train_parser(parser):
     parser.add_argument('--validation-dataset', type=str, help="Dataset to use as validation")
     parser.add_argument('--epochs', type=int, help="Number of epochs")
     parser.add_argument('--callbacks', type=str, nargs='+', help="List of callbacks")
-    parser.add_argument('--data-augmentation', type=str, help='Data augmentation generator')
+    parser.add_argument('--data-augmentation', type=str, nargs='+', help='Data augmentation generator')
 
 
 def display_parser(parser):

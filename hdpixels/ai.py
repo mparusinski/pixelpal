@@ -8,7 +8,7 @@ def train(module, dataset, weights, **kwargs):
     os.makedirs(os.path.dirname(weights), exist_ok=True)
     model = get_model(module)
     callbacks = get_callbacks(kwargs.get('callbacks', []))
-    data_augmentation = get_data_augmentation(kwargs.get('data_augmentation', None))
+    data_augmentation = get_data_augmentation(kwargs.get('data_augmentation', []))
     x_train, y_train = load_data(dataset)
     validation_data = None
     if 'validation_dataset' in kwargs:

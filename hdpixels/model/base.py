@@ -16,9 +16,9 @@ def ssim_metric(y_true, y_pred):
     return tf.image.ssim(y_true, y_pred, max_val=1.0)
 
 
-def learn(model, x_data, y_data, batch_size=32, epochs=10, callbacks=[], data_augmentation=None, **kwargs):
-    if data_augmentation:      
-        x_data, y_data = data_augmentation(x_data, y_data)
+def learn(model, x_data, y_data, batch_size=32, epochs=10, callbacks=[], data_augmentation=[], **kwargs):
+    for augment in data_augmentation:      
+        x_data, y_data = augment(x_data, y_data)
     model.fit(
         x_data, y_data, epochs=epochs, callbacks=callbacks, batch_size=batch_size, **kwargs
     )
@@ -78,12 +78,15 @@ def get_model(module_name, **kwargs):
 
 def get_data_augmentation(augmentation, **kwargs):
     if augmentation is None:
-        return None
-    try:
-        module = importlib.import_module(augmentation)
-    except:
-        raise Exception("Can't import {}\n\t(current working directory is {})".format(augmentation, os.getcwd()))
-    data_augmentation_producer = getattr(module, 'create_generator')
+        return []
+    data_augmentation = []
+    for aug in augmentation
+        try:
+            module = importlib.import_module(augmentation)
+        except:
+            raise Exception("Can't import {}\n\t(current working directory is {})".format(augmentation, os.getcwd()))
+        data_augmentation_producer = getattr(module, 'create_generator')
+        data_augmentation.append(data_augmentation_producer)
     return data_augmentation_producer 
 
 
