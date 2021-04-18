@@ -2,7 +2,7 @@ import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
 import numpy as np
 
-from hdpixels.model.base import get_model, load_weights, augment
+from pixelpal.model.base import get_model, load_weights, augment
 
 
 def display_file(image, augmentator=None, weights_file=None, save_fig=None, horizontal_flip=False, vertical_flip=False):

@@ -2,7 +2,7 @@ from tensorflow.keras import Model
 from tensorflow.keras.layers import Input, UpSampling2D, Conv2D
 from tensorflow.keras.optimizers import Adam
 
-from hdpixels.model.base import ssim_metric, psnr_metric
+from pixelpal.model.base import ssim_metric, psnr_metric
 
 
 def create_model(input_shape=(32, 32), channels=4, kernel_size_1=9, kernel_size_2=1, kernel_size_3=5, features_1=64, features_2=32, num_conv_layers=1):

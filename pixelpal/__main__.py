@@ -1,8 +1,8 @@
 import sys
 import argparse
-from hdpixels.ai import train
-from hdpixels.visualisation.display import display_file
-from hdpixels.evaluate import evaluate_augmentator
+from pixelpal.ai import train
+from pixelpal.visualisation.display import display_file
+from pixelpal.evaluate import evaluate_augmentator
 
 
 def str2bool(v):

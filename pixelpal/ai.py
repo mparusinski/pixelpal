@@ -1,7 +1,7 @@
 import os
 
-from hdpixels.model.base import learn, get_model, save_weights, get_callbacks, get_data_augmentation
-from hdpixels.data import load_data
+from pixelpal.model.base import learn, get_model, save_weights, get_callbacks, get_data_augmentation
+from pixelpal.data import load_data
 
 
 def train(module, dataset, weights, **kwargs):

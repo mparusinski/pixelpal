@@ -5,7 +5,7 @@ import numpy as np
 import tensorflow as tf
 from tensorflow.keras.models import load_model
 
-from hdpixels.utils import fix_missing_alpha_channel
+from pixelpal.utils import fix_missing_alpha_channel
 
 
 def psnr_metric(y_true, y_pred):

@@ -6,8 +6,8 @@ from itertools import islice
 import numpy as np
 import tensorflow as tf
 
-from hdpixels.model.base import get_model, load_weights, augment
-from hdpixels.utils import fix_missing_alpha_channel, build_list_of_images_in_dir
+from pixelpal.model.base import get_model, load_weights, augment
+from pixelpal.utils import fix_missing_alpha_channel, build_list_of_images_in_dir
 
 
 def batch_iterate(iterable, batch_size=32):

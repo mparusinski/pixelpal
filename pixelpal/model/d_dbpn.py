@@ -3,8 +3,7 @@ from tensorflow.keras.layers import Input, UpSampling2D, Conv2D, Conv2DTranspose
 from tensorflow.keras.optimizers import Adam
 from tensorflow.keras.utils import plot_model
 
-
-from hdpixels.model.base import ssim_metric, psnr_metric
+from pixelpal.model.base import ssim_metric, psnr_metric
 
 
 def up_projection_unit(low_res_prev, nr, kernel_size):

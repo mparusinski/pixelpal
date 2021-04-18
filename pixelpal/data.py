@@ -4,7 +4,7 @@ import numpy as np
 import matplotlib.image as mpimg
 from tensorflow.keras.utils import Sequence
 
-from hdpixels.utils import build_list_of_images_in_dir, fix_missing_alpha_channel
+from pixelpal.utils import build_list_of_images_in_dir, fix_missing_alpha_channel
 
 
 class DataGenerator(Sequence):
