@@ -1,6 +1,6 @@
 PixelPal
 ============
-[![GitHub stars](https://img.shields.io/github/stars/mparusinski/hdpixels)](https://github.com/mparusinski/hdpixels/stargazers)[![GitHub issues](https://img.shields.io/github/issues/mparusinski/hd-pixels)](https://github.com/mparusinski/hdpixels/issues)[![GitHub forks](https://img.shields.io/github/forks/mparusinski/hd-pixels)](https://github.com/mparusinski/hdpixels/network)[![GitHub license](https://img.shields.io/github/license/mparusinski/hd-pixels)](https://github.com/mparusinski/hdpixels/blob/master/LICENSE.md)
+[![GitHub stars](https://img.shields.io/github/stars/mparusinski/pixelpal)](https://github.com/mparusinski/pixelpal/stargazers)[![GitHub issues](https://img.shields.io/github/issues/mparusinski/hd-pixels)](https://github.com/mparusinski/pixelpal/issues)[![GitHub forks](https://img.shields.io/github/forks/mparusinski/hd-pixels)](https://github.com/mparusinski/pixelpal/network)[![GitHub license](https://img.shields.io/github/license/mparusinski/hd-pixels)](https://github.com/mparusinski/pixelpal/blob/master/LICENSE.md)
 
 This is a python application powered by Tensorflow and Keras that uses
 deep learning to enhance low resolution images like icons.
@@ -28,42 +28,42 @@ You need to install Tensorflow 2.0 :
 
 ## Usage
 
-You can run `hdpixels` in two ways : either to train a network or to augment images.
+You can run `pixelpal` in two ways : either to train a network or to augment images.
 
 ### Training
 
 To train a network run
 ```bash
-python -m hdpixels train 'python.module.path' ./path/to/dataset ./path/to/weights.h5 --validation-dataset ./path/to/validation-dataset --callbacks list_of_python_modules
+python -m pixelpal train 'python.module.path' ./path/to/dataset ./path/to/weights.h5 --validation-dataset ./path/to/validation-dataset --callbacks list_of_python_modules
 ```
 
 so for instance"
 ```bash
-python -m hdpixels train 'hdpixels.model.pre_upsampling' data/processed/training/ ./models/preupsampling/v0.h5 --validation-dataset data/processed/validation --callbacks 'hdpixels.callbacks.csv_logger' 'hdpixels.callbacks.early_stopping' 'hdpixels.callbacks.model_checkpoint'
+python -m pixelpal train 'pixelpal.model.pre_upsampling' data/processed/training/ ./models/preupsampling/v0.h5 --validation-dataset data/processed/validation --callbacks 'pixelpal.callbacks.csv_logger' 'pixelpal.callbacks.early_stopping' 'pixelpal.callbacks.model_checkpoint'
 ```
 
 ### Augmenting
 
 To visualise the run of a network (or not)
 ```bash
-python -m hdpixels augment /path/to/image.png --module 'python.module.path' --weights ./path/to/weights.h5
+python -m pixelpal augment /path/to/image.png --module 'python.module.path' --weights ./path/to/weights.h5
 ```
 
 so for instance:
 ```bash
-python -m hdpixels augment data/processed/training/32x32/0f31d855-ff12-4a8f-87a1-f06438f85123.png --module 'hdpixels.model.pre_upsampling' --weights ./models/preupsampling/weights.h5
+python -m pixelpal augment data/processed/training/32x32/0f31d855-ff12-4a8f-87a1-f06438f85123.png --module 'pixelpal.model.pre_upsampling' --weights ./models/preupsampling/weights.h5
 ```
 
 ### Evaluate quality of model
 
 To evaluate the quality of a model (or not)
 ```bash
-python -m hdpixels evaluate /path/to/dataset 'python.module.path' --weights ./path/to/weights.h5'
+python -m pixelpal evaluate /path/to/dataset 'python.module.path' --weights ./path/to/weights.h5'
 ```
 
 so for instance:
 ```bash
-python -m hdpixels evaluate ./data/processed/training 'hdpixels.model.pre_upsampling' --weights ./models/preupsampling/weights.h5
+python -m pixelpal evaluate ./data/processed/training 'pixelpal.model.pre_upsampling' --weights ./models/preupsampling/weights.h5
 ```
 
 
@@ -86,7 +86,7 @@ dataset
 
 ```
 
-To donwload a copy of the default dataset do to the following:
+To download a copy of the default dataset do to the following:
 
 ```bash
 cd data/raw
@@ -98,6 +98,6 @@ python data/processed/prepare.py
 ---
 
 ## License
->You can check out the full license [here](https://github.com/mparusinski/hdpixels/blob/master/LICENSE.md)
+>You can check out the full license [here](https://github.com/mparusinski/pixelpal/blob/master/LICENSE.md)
 
 This project is licensed under the terms of the **2 clauses BSD** license.
