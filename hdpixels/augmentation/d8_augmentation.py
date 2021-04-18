@@ -1,24 +1,17 @@
 import numpy as np
 
 
-def yield_d8(elem):
-    elem_id = elem
-    elem_r1 = np.rot90(elem)
-    elem_r2 = np.rot90(elem, 2)
-    elem_r3 = np.rot90(elem, 3)
+__AUGMENTORS__ = {
+    0: lambda elem: elem,
+    1: lambda elem: np.rot90(elem),
+    2: lambda elem: np.rot90(elem, 2),
+    3: lambda elem: np.rot90(elem, 3),
+    4: lambda elem: np.fliplr(np.flipud(elem)),
+    5: lambda elem: np.rot90(np.fliplr(np.flipud(elem))),
+    6: lambda elem: np.rot90(np.fliplr(np.flipud(elem)), 2),
+    7: lambda elem: np.rot90(np.fliplr(np.flipud(elem)), 3),
+}
 
-    elem_d = np.fliplr(np.flipud(elem))
-    elem_r1_d = np.rot90(elem_d)
-    elem_r2_d = np.rot90(elem_d, 2)
-    elem_r3_d = np.rot90(elem_d, 3)
-
-    return [elem_id, elem_r1, elem_r2, elem_r3, elem_d, elem_r1_d, elem_r2_d, elem_r3_d]
-
-
-def create_generator(X, y):
-    x_augmented = []
-    y_augmented = []
-    for x_elem, y_elem in zip(X, y):
-        x_augmented += yield_d8(x_elem)
-        y_augmented += yield_d8(y_elem)
-    return (np.array(x_augmented), np.array(y_augmented))
+def create_generator(x, y):
+    idx = np.random.randint(0,  8)
+    return __AUGMENTORS__[idx](x), __AUGMENTORS__[idx](y)

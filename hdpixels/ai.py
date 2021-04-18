@@ -9,13 +9,12 @@ def train(module, dataset, weights, **kwargs):
     model = get_model(module)
     callbacks = get_callbacks(kwargs.get('callbacks', []))
     data_augmentation = get_data_augmentation(kwargs.get('data_augmentation', []))
-    x_train, y_train = load_data(dataset)
-    validation_data = None
+    train_data_gen= load_data(dataset, augmentations=data_augmentation)
+    valid_data_gen = None
     if 'validation_dataset' in kwargs:
-        x_valid, y_valid = load_data(kwargs['validation_dataset'])
-        validation_data = (x_valid, y_valid)
+        valid_data_gen = load_data(kwargs['validation_dataset'])
     learn(
-        model, x_train, y_train, validation_data=validation_data, callbacks=callbacks, data_augmentation=data_augmentation
+        model, train_data_gen, validation_data=valid_data_gen, callbacks=callbacks
     )
     save_weights(model, weights)
 

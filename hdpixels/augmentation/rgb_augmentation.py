@@ -21,3 +21,17 @@ def create_generator(X, y):
         x_augmented += yield_rgb_augmentation(x_elem)
         y_augmented += yield_rgb_augmentation(y_elem)
     return (np.array(x_augmented), np.array(y_augmented))
+
+
+__AUGMENTORS__ = {
+    0: lambda elem: elem
+    1: lambda elem: elem[:, :, [0,2,1,4]]
+    2: lambda elem: elem[:, :, [1,0,2,4]]
+    3: lambda elem: elem[:, :, [1,2,0,4]]
+    4: lambda elem: elem[:, :, [2,0,1,4]]
+    5: lambda elem: elem[:, :, [2,1,0,4]]
+}
+
+def create_generator(x, y):
+    idx = np.random.randint(0, 6)
+    return __AUGMENTORS__[idx](x), __AUGMENTORS__[idx](y)
