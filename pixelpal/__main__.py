@@ -32,6 +32,7 @@ def display_parser(parser):
     parser.add_argument('--weights', type=str, help="Weights to load")
     parser.add_argument('--horizontal-flip', type=str2bool, help="Flip image horizontally", nargs='?', const=True, default=False)
     parser.add_argument('--vertical-flip', type=str2bool, help="Flip image vertically", nargs='?', const=True, default=False)
+    parser.add_argument('--output', type=str, help="Output file to save to")
 
 
 def evaluate_parser(parser):
@@ -57,7 +58,7 @@ if __name__ == '__main__':
             callbacks=args.callbacks, data_augmentation=args.data_augmentation
         )
     elif args.tool == 'augment':
-        display_file(args.image, args.module, args.weights, horizontal_flip=args.horizontal_flip, vertical_flip=args.vertical_flip)
+        display_file(args.image, args.module, args.weights, horizontal_flip=args.horizontal_flip, vertical_flip=args.vertical_flip, save_file=args.output)
     elif args.tool == 'evaluate':
         evaluate_augmentator(args.dataset + '/32x32', args.dataset + '/64x64', args.module, weights=args.weights)
     else:

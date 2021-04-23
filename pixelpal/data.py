@@ -15,7 +15,7 @@ class DataGenerator(Sequence):
 
         self.classes = classes
         self.shapes = shapes
-        self.augmentations = []
+        self.augmentations = augmentations if type(augmentations) == list else [augmentations]
         self.files_per_classes = {
             x: list(build_list_of_images_in_dir(os.path.join(folder, x)))
             for x in self.classes
