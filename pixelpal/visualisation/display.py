@@ -52,6 +52,7 @@ def display_image_folder(image_dir, augmentation_model=None, im_modifier=None, s
             plt.savefig(os.path.join(save_file_dir, os.path.basename(im_file)))
         else:
             plt.show()
+        plt.clf()
 
 def display_single_file(image, augmentation_model=None, im_modifier=None, save_file=None):
     image = mpimg.imread(image)
