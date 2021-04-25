@@ -1,6 +1,7 @@
 import os
 import importlib
 import numpy as np
+from tqdm.auto import tqdm
 
 import tensorflow as tf
 from tensorflow.keras.models import load_model
@@ -39,10 +40,10 @@ def load_weights(sk_model, weights_file):
 
 
 def augment(model, images):
-    if type(images) == list and len(images) == 1:
+    if type(images) == list and len(images) >= 1:
         # Fix alpha channel
         images = [fix_missing_alpha_channel(image) for image in images]
-        image_as_batch = np.array(images)
+        images_as_batch = np.array(images)
     elif type(images) == list and len(images) == 0:
         raise Exception("Unable to augment empty list")
     elif type(images) == np.ndarray and len(images.shape) == 4:
@@ -60,7 +61,7 @@ def augment(model, images):
     else:
         raise Exception("Unable to augment {}".format(images))
 
-    prediction_batch = model.predict(images_as_batch)
+    prediction_batch = model.predict(images_as_batch, batch_size=128, verbose=1)
     return [np.array(x) for x in prediction_batch.tolist()]
 
 
