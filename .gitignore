@@ -10,4 +10,5 @@ data/processed/training
 data/processed/final
 data/processed/validation
 
+test/
 **/__pycache__
