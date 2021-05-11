@@ -5,6 +5,9 @@ from tqdm.auto import tqdm
 
 import tensorflow as tf
 from tensorflow.keras.models import load_model
+from tensorflow.keras import Model
+from tensorflow.keras.layers import Input, Conv2D, LeakyReLU, Dropout, Flatten, Activation, BatchNormalization, Dense
+from tensorflow.keras.optimizers import Adam
 
 from pixelpal.utils import fix_missing_alpha_channel
 
@@ -16,6 +19,35 @@ def psnr_metric(y_true, y_pred):
 def ssim_metric(y_true, y_pred):
     return tf.image.ssim(y_true, y_pred, max_val=1.0)
 
+
+def build_discriminator(input_shape=(32, 32), channels=4, filters=64, kernel_size=3, dropout=0.5, num_conv_layers=4):
+    print('Building discriminator')
+    input_layer = Input((*input_shape, channels))
+
+    previous_layer = input_layer
+    for i in range(num_conv_layers):
+        conv_layer = Conv2D(
+            filters, kernel_size, strides=2, padding="same", activation=LeakyReLU(alpha=0.2)
+        )(previous_layer)
+        norm_layer = BatchNormalization()(conv_layer)
+        previous_layer = Dropout(dropout)(norm_layer)
+
+    flat_layer = Flatten()(previous_layer)
+    dense_layer = Dense(1)(flat_layer)
+
+    output_layer = Activation('sigmoid')(dense_layer)
+
+    model = Model(inputs=input_layer, outputs=output_layer)
+    model.compile(optimizer=Adam(lr=1e-4), loss='binary_crossentropy', metrics=['acc'])
+    print(model.summary())
+
+    return model
+
+
+def learn_with_gan(model, train_data_gen, batch_size=32, epochs=10, callbacks=[], **kwargs):
+    # TODO: Implement this
+    pass
+    
 
 def learn(model, train_data_gen, batch_size=32, epochs=10, callbacks=[], **kwargs):
     model.fit(
