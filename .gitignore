@@ -11,4 +11,8 @@ data/processed/final
 data/processed/validation
 
 test/
+*.log
+*.aux
+*.tex
+*.pdf
 **/__pycache__
