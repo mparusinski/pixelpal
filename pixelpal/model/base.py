@@ -5,7 +5,7 @@ from tqdm.auto import tqdm
 
 import tensorflow as tf
 from tensorflow.keras.models import load_model
-from tensorflow.keras import Model
+from tensorflow.keras import Model, Sequential
 from tensorflow.keras.layers import Input, Conv2D, LeakyReLU, Dropout, Flatten, Activation, BatchNormalization, Dense
 from tensorflow.keras.optimizers import Adam
 
@@ -20,7 +20,7 @@ def ssim_metric(y_true, y_pred):
     return tf.image.ssim(y_true, y_pred, max_val=1.0)
 
 
-def build_discriminator(input_shape=(32, 32), channels=4, filters=64, kernel_size=3, dropout=0.5, num_conv_layers=4):
+def build_discriminator(input_shape=(64, 64), channels=4, filters=64, kernel_size=3, dropout=0.5, num_conv_layers=4):
     print('Building discriminator')
     input_layer = Input((*input_shape, channels))
 
@@ -38,16 +38,47 @@ def build_discriminator(input_shape=(32, 32), channels=4, filters=64, kernel_siz
     output_layer = Activation('sigmoid')(dense_layer)
 
     model = Model(inputs=input_layer, outputs=output_layer)
-    model.compile(optimizer=Adam(lr=1e-4), loss='binary_crossentropy', metrics=['acc'])
+    model.compile(optimizer=Adam(lr=1e-4), loss='binary_crossentropy', metrics=['accuracy'])
     print(model.summary())
 
     return model
 
 
-def learn_with_gan(model, train_data_gen, batch_size=32, epochs=10, callbacks=[], **kwargs):
-    # TODO: Implement this
-    pass
-    
+def learn_with_gan(model, train_data_gen, batch_size=32, iterations=4, callbacks=[], **kwargs):
+    # Train one epoch in classical way
+    model.fit(
+        train_data_gen, epochs=1, callbacks=callbacks, batch_size=batch_size, **kwargs
+    )
+
+    discriminator = build_discriminator()
+    adverserial_model = Sequential()
+    adverserial_model.add(model)
+    adverserial_model.add(discriminator)
+    adverserial_model.layers[-1].trainable = False
+
+    # TODO: This should model loss + gan loss
+    adverserial_model.compile(loss='binary_crossentropy', optimizer=Adam(lr=1e-4), metrics=['accuracy'])
+
+    for i in range(iterations):
+        for j in range(len(train_data_gen)):
+            # Preparing batch data
+            x, y_real = train_data_gen[j] # Input to SR algorithm and ground truth
+            y_fake = model.predict(x, batch_size=batch_size)
+ 
+            # Preparing discriminator data
+            x_disc = np.concatenate((y_real, y_fake))
+            y_disc = np.ones([2 * batch_size, 1])
+            y_disc[batch_size:, :] = 0
+
+            # Training the discriminator
+            d_loss = discriminator.train_on_batch(x_disc, y_disc)
+            print(f"Discriminator loss {d_loss}")
+
+            # Training the adverserial model
+            y_advs = np.ones([batch_size, 1])
+            a_loss = adverserial_model.train_on_batch(x, y_advs)
+            print(f"Adverserial loss {a_loss}")
+
 
 def learn(model, train_data_gen, batch_size=32, epochs=10, callbacks=[], **kwargs):
     model.fit(

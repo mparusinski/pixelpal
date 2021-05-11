@@ -20,6 +20,7 @@ def train_parser(parser):
     parser.add_argument('module', type=str, help="Module to train")
     parser.add_argument('dataset', type=str, help="Dataset to train on")
     parser.add_argument('weights', type=str, help="Where to store the weights")
+    parser.add_argument('--use-gan-loss', type=str2bool, nargs='?', const=True, default=False, help="Use gan loss for training (takes more time)")
     parser.add_argument('--validation-dataset', type=str, help="Dataset to use as validation")
     parser.add_argument('--epochs', type=int, help="Number of epochs")
     parser.add_argument('--callbacks', type=str, nargs='+', help="List of callbacks")
@@ -55,7 +56,8 @@ if __name__ == '__main__':
         train(
             args.module, args.dataset, args.weights, 
             validation_dataset= args.validation_dataset, epochs=args.epochs, 
-            callbacks=args.callbacks, data_augmentation=args.data_augmentation
+            callbacks=args.callbacks, data_augmentation=args.data_augmentation,
+            use_gan_loss=args.use_gan_loss
         )
     elif args.tool == 'augment':
         display_file_or_dir(args.image, args.module, args.weights, horizontal_flip=args.horizontal_flip, vertical_flip=args.vertical_flip, save_file_or_dir=args.output)
