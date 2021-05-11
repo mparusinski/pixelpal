@@ -10,6 +10,7 @@ from tensorflow.keras.layers import Input, Conv2D, LeakyReLU, Dropout, Flatten, 
 from tensorflow.keras.optimizers import Adam
 
 from pixelpal.utils import fix_missing_alpha_channel
+from pixelpal.data import SimpleDataGenerator, DiscDataGenerator, GANDataGenerator
 
 
 def psnr_metric(y_true, y_pred):
@@ -44,45 +45,58 @@ def build_discriminator(input_shape=(64, 64), channels=4, filters=64, kernel_siz
     return model
 
 
-def learn_with_gan(model, train_data_gen, batch_size=32, iterations=4, callbacks=[], **kwargs):
-    # Train one epoch in classical way
-    model.fit(
-        train_data_gen, epochs=1, callbacks=callbacks, batch_size=batch_size, **kwargs
+def set_trainable(network, trainable):
+    network.trainable = trainable
+    for layer in network.layers:
+        layer.trainable = trainable
+
+
+def build_adverserial_model(generator, discriminator, input_shape=(32, 32), channels=4):
+    print("Building adverserial model")
+    set_trainable(discriminator, False)
+    gan_input = Input((*input_shape, channels))
+    generated = generator(gan_input)
+    gan_output = discriminator(generated)
+
+    gan = Model(inputs=gan_input, outputs={'reconstruction': generated, 'discriminator': gan_output})
+    gan.compile(
+        optimizer=Adam(lr=1e-4), loss={'reconstruction': 'mse', 'discriminator': 'binary_crossentropy'},
+        loss_weights=[0.2, 0.8], metrics={'reconstruction': [ssim_metric, psnr_metric], 'discriminator': 'accuracy'}
     )
+    print(gan.summary())
+    return gan
 
+
+def learn_with_gan(model, dataset, batch_size=32, iterations=4, callbacks=[], **kwargs):
+    disc_data_gen = DiscDataGenerator(folder=dataset, generator=model)
+    gan_data_gen = GANDataGenerator(folder=dataset, augmentations=kwargs.get('data_augmentation'))
+    valid_data_gen = None
+    if 'validation_dataset' in kwargs:
+        valid_data_gen = SimpleDataGenerator(folder=kwargs['validation_dataset'])
+
+    # Train one epoch in classical way
     discriminator = build_discriminator()
-    adverserial_model = Sequential()
-    adverserial_model.add(model)
-    adverserial_model.add(discriminator)
-    adverserial_model.layers[-1].trainable = False
+    adverserial_model = build_adverserial_model(model, discriminator)
 
-    # TODO: This should model loss + gan loss
-    adverserial_model.compile(loss='binary_crossentropy', optimizer=Adam(lr=1e-4), metrics=['accuracy'])
+    steps = kwargs.get('steps', 4)
 
     for i in range(iterations):
-        for j in range(len(train_data_gen)):
-            # Preparing batch data
-            x, y_real = train_data_gen[j] # Input to SR algorithm and ground truth
-            y_fake = model.predict(x, batch_size=batch_size)
- 
-            # Preparing discriminator data
-            x_disc = np.concatenate((y_real, y_fake))
-            y_disc = np.ones([2 * batch_size, 1])
-            y_disc[batch_size:, :] = 0
-
-            # Training the discriminator
-            d_loss = discriminator.train_on_batch(x_disc, y_disc)
-            print(f"Discriminator loss {d_loss}")
-
-            # Training the adverserial model
-            y_advs = np.ones([batch_size, 1])
-            a_loss = adverserial_model.train_on_batch(x, y_advs)
-            print(f"Adverserial loss {a_loss}")
+        discriminator.fit(
+            disc_data_gen, epochs=1, batch_size=batch_size, steps_per_epoch=steps)
+        adverserial_model.fit(
+            gan_data_gen, epochs=1, batch_size=batch_size, steps_per_epoch=steps)
+        if valid_data_gen:
+            metrics = model.evaluate(valid_data_gen, batch_size=batch_size, steps=steps)
 
 
-def learn(model, train_data_gen, batch_size=32, epochs=10, callbacks=[], **kwargs):
+def learn(model, dataset, batch_size=32, epochs=10, callbacks=[], **kwargs):
+    train_data_gen = SimpleDataGenerator(folder=dataset, augmentations=kwargs.get('data_augmentation'))
+    valid_data_gen = None
+    if 'validation_dataset' in kwargs:
+        valid_data_gen = SimpleDataGenerator(folder=kwargs['validation_dataset'])
     model.fit(
-        train_data_gen, epochs=epochs, callbacks=callbacks, batch_size=batch_size, **kwargs
+        train_data_gen, epochs=epochs, callbacks=callbacks, batch_size=batch_size, 
+        validation_data=valid_data_gen 
     )
 
 
